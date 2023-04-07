@@ -1,2 +1,2 @@
-*bat
-*class
+.env
+/node_modules

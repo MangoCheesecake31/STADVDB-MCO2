@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/simpledotcss/simple.min.css">
+    <link rel="stylesheet" href="./public/custom.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/ico" href="./public/favicon.ico">
+    <title>IMDB</title>
+</head>
+<body>
+  <header>
+    <h1>IMDB MOVIES</h1>
+  </header>
+
+  <main>
+    <!-- <p>This is my new website and it's using Simple.css. It's really cool. If you want to use it too, you can <a href="https://simplecss.org">visit their site</a>.</p> -->
+
+    <div>
+      <a class="button">Button</a>
+      <a class="button">Button</a>
+      <a class="button">Button</a>
+      <a class="button">Button</a>
+    </div>
+
+    <table class="center">
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Year</th>
+          <th>Rank</th>
+        </tr>
+        <% table_data[0].forEach(function(row) { %>
+          <tr>
+            <td><%= row.id %></td>
+            <td><%= row.name %></td>
+            <td><%= row.year %></td>
+            <td><%= row.rank %></td>
+          </tr>
+        <% }); %>
+        <% table_data[1].forEach(function(row) { %>
+          <tr>
+            <td><%= row.id %></td>
+            <td><%= row.name %></td>
+            <td><%= row.year %></td>
+            <td><%= row.rank %></td>
+          </tr>
+        <% }); %>
+      </table>
+  </main>
+
+  <footer>
+    <p>STADVDB MCO2 - Group 2</p>
+    <p>Castro, Steven Jentyn S12</p>
+    <!-- <p>Sillona, John Eugene S11</p> -->
+    <!-- <p>Silverio, Gwyneth Alysson S12</p -->
+  </footer>
+</body>
+</html>
