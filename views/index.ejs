@@ -14,46 +14,63 @@
   </header>
 
   <main>
-    <!-- <p>This is my new website and it's using Simple.css. It's really cool. If you want to use it too, you can <a href="https://simplecss.org">visit their site</a>.</p> -->
-
-    <div>
-      <a class="button">Button</a>
-      <a class="button">Button</a>
-      <a class="button">Button</a>
-      <a class="button">Button</a>
+    <div>  
+      <form action="/search" method="POST">
+        <button class="button add_movie_button" onclick="openForm()">Add Movie</button>
+        <input type="text" id="search_text" name="search_text" class="search_bar" placeholder="Type to search"> 
+        <button type="submit" class="button">Search</button>
+      </form>
     </div>
 
-    <table class="center">
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Year</th>
+        <th>Rank</th>
+      </tr>
+      <% table_data[0].forEach(function(row) { %>
         <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Year</th>
-          <th>Rank</th>
+          <td><%= row.id %></td>
+          <td><%= row.name %></td>
+          <td><%= row.year %></td>
+          <td><%= row.rank %></td>
+          <td>
+            <button class="button edit_button">Edit</button> 
+            <button class="button delete_button">Delete</button>
+          </td>
         </tr>
-        <% table_data[0].forEach(function(row) { %>
-          <tr>
-            <td><%= row.id %></td>
-            <td><%= row.name %></td>
-            <td><%= row.year %></td>
-            <td><%= row.rank %></td>
-          </tr>
-        <% }); %>
-        <% table_data[1].forEach(function(row) { %>
-          <tr>
-            <td><%= row.id %></td>
-            <td><%= row.name %></td>
-            <td><%= row.year %></td>
-            <td><%= row.rank %></td>
-          </tr>
-        <% }); %>
-      </table>
+      <% }); %>
+      <% table_data[1].forEach(function(row) { %>
+        <tr>
+          <td><%= row.id %></td>
+          <td><%= row.name %></td>
+          <td><%= row.year %></td>
+          <td><%= row.rank %></td>
+          <td>
+            <button class="button edit_button">Edit</button> 
+            <button class="button delete_button">Delete</button>
+          </td>
+        </tr>
+      <% }); %>
+    </table>
   </main>
-
+    
   <footer>
     <p>STADVDB MCO2 - Group 2</p>
     <p>Castro, Steven Jentyn S12</p>
     <!-- <p>Sillona, John Eugene S11</p> -->
     <!-- <p>Silverio, Gwyneth Alysson S12</p -->
   </footer>
+
+  <script>
+    function openForm() {
+      var width = 500
+      var height = 600
+      var left = (screen.width / 2) - (width / 2);
+      var top = (screen.height / 2) - (height / 2);
+      window.open("/form", "Form", `width=${width}, height=${height}, left=${left}, top=${top}`);
+    }
+  </script>
 </body>
 </html>

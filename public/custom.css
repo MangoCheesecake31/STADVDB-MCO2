@@ -6,3 +6,28 @@ table {
 th, td {
     width: 25%;
 }
+
+.search_bar {
+    width: 50%;
+    margin-left: 6.25%;
+}
+
+.search_button {
+    width: 25%;
+}
+
+.submit_movie_button {
+    width: 100%;
+}
+
+.add_movie_button {
+    width: 25%;
+}
+
+.edit_button {
+    width: 10em;
+}
+
+.delete_button {
+    width: 10em;
+}

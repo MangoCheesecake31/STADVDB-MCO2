@@ -16,6 +16,7 @@ const crash_config = {
 const HOST = process.env.HOST;
 const PORT = process.env.PORT;
 
+app.use(express.urlencoded({ extended: true }));
 app.use('/public', express.static('public'));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.set('view engine', 'ejs');
@@ -25,12 +26,22 @@ app.get('/', express.json(), (req, res, next) => {
 	db.getMovie(req, res, next);
 });
 
-app.get('/:search', express.json(), (req, res, next) => {
-	res.send('hotdog');
+app.post('/search', express.json(), (req, res, next) => {
+	req.crash_config = crash_config;
+
+	if (req.body.search_text.legnth < 1) {
+		res.redirect('/');
+	} else {
+		db.getMovieSearch(req, res, next);
+	}
 });
 
-app.post('/update', express.json(), (req, res, next) => {
-	// update info
+app.get('/form', express.json(), (req, res, next) => {
+	res.render('form', {});
+});
+
+app.post('/add', express.json(), (req, res, next) => {
+	// add info
 	res.send('hotdog');
 });
 
@@ -39,15 +50,16 @@ app.post('/delete', express.json(), (req, res, next) => {
 	res.send('hotdog');
 });
 
-app.post('/add', express.json(), (req, res, next) => {
-	// add info
-	res.send('hotdog');
-});
 
 
-app.use(function(err, req, res, next) {
-	res.status(err.status || 500);
-	res.send(err.message);
+// Error handling middleware
+app.use((err, req, res, next) => {
+	console.log('Error Handler');
+	if (err.status === 503) {
+		res.status(503).render('error', {message: err.message});
+	} else {
+		res.send('Hotdog');
+	}
 });
 
 app.listen(PORT, (err) => {
