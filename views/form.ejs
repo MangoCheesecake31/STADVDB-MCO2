@@ -16,19 +16,23 @@
   <main>
     <div>
       <form action="/add" method="POST">
-
         <label>ID</label>
         <input type="text" id="id_text" name="id_text">
         <label>Name</label>
         <input type="text" id="name_text" name="name_text">
         <label>Year</label>
-        <input type="text" id=year_text" name=year_text">
+        <input type="text" id="year_text" name="year_text">
         <label>Rank</label>
-        <input type="text" id=rank_text" name=rank_text">
-        <button type="submit" class="button submit_movie_button">Submit Movie</button>
+        <input type="text" id="rank_text" name="rank_text">
+        <button type="submit" class="button submit_movie_button" onclick="setTimeout(closeForm, 3000)">Submit Movie</button>
       </form>
     </div>
-
+    <script>
+      function closeForm() {
+        window.close();
+      }
+    </script>
   </main>
+
 </body>
 </html>

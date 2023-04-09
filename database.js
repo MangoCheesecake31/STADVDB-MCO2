@@ -29,16 +29,13 @@ module.exports = {
                 throw new Error('> Simulated Crash!');
             }
 
+            // Connection
             node2_connection = sql.createConnection(database_configs.node2);
-            let statement = 'SELECT * FROM movies LIMIT 25 OFFSET 0';                           // TODO: Parameterize Offset
 
-            let result = await new Promise((resolve, reject) => {
-                node2_connection.query(statement, (err, results, fields) => {
-                    (results) ? resolve(results) : reject(err);      
-                });
-            });
+            // Query
+            let statement = 'SELECT * FROM movies LIMIT 25 OFFSET 0';
+            dataA = await runQuery(node2_connection, statement, 'READ');
             node2_connection.end();
-            dataA = result;
         } catch (err) {
             console.log('> Node 2 is unavailable!');
             if (node2_connection != null) {
@@ -53,16 +50,13 @@ module.exports = {
                     throw new Error('> Simulated Crash!');
                 }
 
-                let statement = 'SELECT * FROM movies WHERE year >= 1980 LIMIT 25 OFFSET 0';    // TODO: Parameterize Offset
+                // Connection
                 node1_connection = sql.createConnection(database_configs.node1);
 
-                let result = await new Promise((resolve, reject) => {
-                    node1_connection.query(statement, (err, results, fields) => {
-                        (results) ? resolve(results) : reject(err);      
-                    });  
-                });    
-                node1_connection.end();
-                dataA = result;          
+                // Query
+                let statement = 'SELECT * FROM movies WHERE year >= 1980 LIMIT 25 OFFSET 0';
+                dataA = await runQuery(node1_connection, statement, 'READ');
+                node1_connection.end();         
             } catch (err) {
                 console.log('> Node 1 is unavailable!');
                 if (node1_connection != null) {
@@ -84,16 +78,13 @@ module.exports = {
                 throw new Error('> Simulated Crash!');
             }
 
+            // Connection
             node3_connection = sql.createConnection(database_configs.node3);
-            let statement = 'SELECT * FROM movies LIMIT 25 OFFSET 0';                           // TODO: Parameterize Offset
 
-            let result = await new Promise((resolve, reject) => {
-                node3_connection.query(statement, (err, results, fields) => {
-                    (results) ? resolve(results) : reject(err);     
-                });
-            });
+            // Query
+            let statement = 'SELECT * FROM movies LIMIT 25 OFFSET 0';
+            dataB = await runQuery(node3_connection, statement, 'READ');
             node3_connection.end();
-            dataB = result;  
         } catch (err) {
             console.log('> Node 3 is unavailable!');
             if (node3_connection != null) {
@@ -108,16 +99,13 @@ module.exports = {
                     throw new Error('> Simulated Crash!');
                 }
 
-                let statement = 'SELECT * FROM movies WHERE year < 1980 LIMIT 25 OFFSET 0';     // TODO: Parameterize Offset
+                // Connection
                 node1_connection = sql.createConnection(database_configs.node1);
 
-                let result = await new Promise((resolve, reject) => {
-                    node1_connection.query(statement, (err, results, fields) => {
-                        (results) ? resolve(results) : reject(err);      
-                    });  
-                });    
-                node1_connection.end();
-                dataB = result;             
+                // Query
+                let statement = 'SELECT * FROM movies WHERE year < 1980 LIMIT 25 OFFSET 0';
+                dataB = await runQuery(node1_connection, statement, 'READ');
+                node1_connection.end();            
             } catch (err) {
                 console.log('> Node 1 is unavailable!');
                 if (node1_connection != null) {
@@ -148,16 +136,13 @@ module.exports = {
                 throw new Error('> Simulated Crash!');
             }
 
+            // Connection
             node2_connection = sql.createConnection(database_configs.node2);
+            
+            // Query
             let statement = 'SELECT * FROM movies WHERE `id` LIKE ? OR `name` LIKE ? OR `year` LIKE ? OR `rank` LIKE ? LIMIT 25 OFFSET 0';
-
-            let result = await new Promise((resolve, reject) => {
-                node2_connection.execute(statement, values, (err, results, fields) => {
-                    (results) ? resolve(results) : reject(err);    
-                });
-            });
+            dataA = await runExecute(node2_connection, statement, values, 'READ');
             node2_connection.end();
-            dataA = result;
         } catch (err) {
             console.log('> Node 2 is unavailable!');
             if (node2_connection != null) {
@@ -172,16 +157,13 @@ module.exports = {
                     throw new Error('> Simulated Crash!');
                 }
 
+                // Connection
                 node1_connection = sql.createConnection(database_configs.node1);
+
+                // Query
                 let statement = 'SELECT * FROM (SELECT * FROM movies WHERE year >= 1980) as m WHERE `id` LIKE ? OR `name` LIKE ? OR `year` LIKE ? OR `rank` LIKE ? LIMIT 25 OFFSET 0';
-                
-                let result = await new Promise((resolve, reject) => {
-                    node1_connection.execute(statement, values, (err, results, fields) => {
-                        (results) ? resolve(results) : reject(err);      
-                    });  
-                });    
-                node1_connection.end();
-                dataA = result;          
+                dataA = await runExecute(node1_connection, statement, values, 'READ');
+                node1_connection.end();        
             } catch (err) {
                 console.log('> Node 1 is unavailable!');
                 if (node1_connection != null) {
@@ -203,16 +185,13 @@ module.exports = {
                 throw new Error('> Simulated Crash!');
             }
 
+            // Connection
             node3_connection = sql.createConnection(database_configs.node3);
-            let statement = 'SELECT * FROM movies WHERE `id` LIKE ? OR `name` LIKE ? OR `year` LIKE ? OR `rank` LIKE ? LIMIT 25 OFFSET 0';
 
-            let result = await new Promise((resolve, reject) => {
-                node3_connection.execute(statement, values, (err, results, fields) => {
-                    (results) ? resolve(results) : reject(err);     
-                });
-            });
+            // Query
+            let statement = 'SELECT * FROM movies WHERE `id` LIKE ? OR `name` LIKE ? OR `year` LIKE ? OR `rank` LIKE ? LIMIT 25 OFFSET 0';
+            dataB = await runExecute(node3_connection, statement, values, 'READ');
             node3_connection.end();
-            dataB = result;  
         } catch (err) {
             console.log('> Node 3 is unavailable!');
             if (node3_connection != null) {
@@ -227,16 +206,13 @@ module.exports = {
                     throw new Error('> Simulated Crash!');
                 }
 
-                let statement = 'SELECT * FROM (SELECT * FROM movies WHERE year < 1980) as m WHERE `id` LIKE ? OR `name` LIKE ? OR `year` LIKE ? OR `rank` LIKE ? LIMIT 25 OFFSET 0';
+                // Connection
                 node1_connection = sql.createConnection(database_configs.node1);
 
-                let result = await new Promise((resolve, reject) => {
-                    node1_connection.execute(statement, values, (err, results, fields) => {
-                        (results) ? resolve(results) : reject(err);      
-                    });  
-                });    
-                node1_connection.end();
-                dataB = result;             
+                // Query
+                let statement = 'SELECT * FROM (SELECT * FROM movies WHERE year < 1980) as m WHERE `id` LIKE ? OR `name` LIKE ? OR `year` LIKE ? OR `rank` LIKE ? LIMIT 25 OFFSET 0';
+                dataB = await runExecute(node1_connection, statement, values, 'READ');
+                node1_connection.end();           
             } catch (err) {
                 console.log('> Node 1 is unavailable!');
                 if (node1_connection != null) {
@@ -252,24 +228,108 @@ module.exports = {
         console.log("> Rendering page");
         res.render('index', {table_data: [dataA, dataB]});
     },
+    postAddMovie: async (req, res, next) => {
+        var node1_connection;
+        var node2_connection;
+        var node3_connection;
+        var dblog_connection;
+        var values = [parseInt(req.body.id_text), req.body.name_text, parseInt(req.body.year_text), parseFloat(req.body.rank_text)];
+
+        if (1980 <= parseInt(req.body.year_text)) {
+            try {
+                // Insert movie in replicate node 2.
+                console.log('> Inserting data to node 2');
+
+                if (req.crash_config.node2) {
+                    throw new Error('> Simulated Crash!');
+                }
+
+                // TODO: Log Transactions 
+                let log_statement = 'INSERT INTO logs (`operation`, `name`, `year`, `rank`, `status`, `dest` VALUES (?, ?, ?, ?, ?, ?, ?)';
+
+                // Connection
+                node2_connection = sql.createConnection(database_configs.node2);
+
+                // Query
+                let statement = 'INSERT INTO movies (`id`, `name`, `year`, `rank`) VALUES (?, ?, ?, ?)';
+                await runExecute(node2_connection, statement, values, 'WRITE');
+                node2_connection.end();
+            } catch (err) {
+                console.log(err);
+                console.log('> Node 2 is unavailable!');
+            };
+        } else {
+            try {
+                // Insert movie in replicate node 3.
+                console.log('> Inserting data to node 3');
+
+                if (req.crash_config.node3) {
+                    throw new Error('> Simulated Crash!');
+                }
+
+                // TODO: Log Transactions 
+                let log_statement = 'INSERT INTO logs (`operation`, `name`, `year`, `rank`, `status`, `dest` VALUES (?, ?, ?, ?, ?, ?, ?)';
+
+                // Connection
+                node3_connection = sql.createConnection(database_configs.node3);
+
+                // Query
+                let statement = 'INSERT INTO movies (`id`, `name`, `year`, `rank`) VALUES (?, ?, ?, ?)';
+                await runExecute(node3_connection, statement, values, 'WRITE');
+                node3_connection.end();
+            } catch (err) {
+                console.log(err);
+                console.log('> Node 3 is unavailable!');
+            }
+        }
+    },
+    postUpdateMovie: async (req, res, next) => {
+    },
+    postDeleteMovie: async (req, res, next) => {
+    },
+};
+
+/** 
+ *  Repetitive operations for MySQL queries.
+*/
+async function runQuery(connection, statement, type) {
+    try {
+        await connection.promise().query('SET AUTOCOMMIT = 0');
+        await connection.promise().query('START TRANSACTION');
+        await connection.promise().query(`LOCK TABLES movies ${type}`);
+    
+        let result_set = await connection.promise().query(statement);
+    
+        await connection.promise().query('COMMIT');
+        await connection.promise().query('UNLOCK TABLES');
+        return result_set[0];
+    } catch (err) {
+        throw err;
+    }
+};
+
+/** 
+ *  Repetitive operations for prepared MySQL queries.
+*/
+async function runExecute(connection, statement, values, type) {
+    try {
+        await connection.promise().query('SET AUTOCOMMIT = 0');
+        await connection.promise().query('START TRANSACTION');
+        await connection.promise().query(`LOCK TABLES movies ${type}`);
+    
+        let result_set = await connection.promise().execute(statement, values);
+    
+        await connection.promise().query('COMMIT');
+        await connection.promise().query('UNLOCK TABLES');
+        return result_set[0];
+    } catch (err) {
+        throw err;
+    }
 };
 
 
 async function main() {
-
-
-    // node1_connection = sql.createConnection(database_configs.node3);
-
-    // console.log(database_configs.node3);
-
-    const data = await getMovie();
-    console.log(data[0].length);
-    console.log(data[1].length);
-
-
-    // node1_connection.query('SELECT * FROM movies LIMIT 20', (err, results, fields) => {     
-    //     console.log(results);
-    // });
+    console.log('Hello World!');
 };
 
 // main();

@@ -29,11 +29,9 @@ app.get('/', express.json(), (req, res, next) => {
 app.post('/search', express.json(), (req, res, next) => {
 	req.crash_config = crash_config;
 
-	if (req.body.search_text.legnth < 1) {
-		res.redirect('/');
-	} else {
+	if (req.body.search_text !== '') {
 		db.getMovieSearch(req, res, next);
-	}
+	} 
 });
 
 app.get('/form', express.json(), (req, res, next) => {
@@ -41,8 +39,8 @@ app.get('/form', express.json(), (req, res, next) => {
 });
 
 app.post('/add', express.json(), (req, res, next) => {
-	// add info
-	res.send('hotdog');
+	req.crash_config = crash_config;
+	db.oostAddMovie(req, res, next);;
 });
 
 app.post('/delete', express.json(), (req, res, next) => {
@@ -50,11 +48,11 @@ app.post('/delete', express.json(), (req, res, next) => {
 	res.send('hotdog');
 });
 
-
-
 // Error handling middleware
 app.use((err, req, res, next) => {
 	console.log('Error Handler');
+	console.log(err);
+
 	if (err.status === 503) {
 		res.status(503).render('error', {message: err.message});
 	} else {
