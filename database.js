@@ -279,7 +279,7 @@ module.exports = {
                 // Insert movie in replicate node 3.
                 console.log('> Inserting data to node 3');
 
-                if (req.crash_config.node2) {
+                if (req.crash_config.node3) {
                     throw new Error('> Simulated Crash!');
                 }
                 
@@ -295,6 +295,7 @@ module.exports = {
                 node3_connection.end();
             } catch (err) {
                 console.log('> Node 3 is unavailable! [ADD]');
+                console.log(err);
 
                 if (node3_connection != null) {
                     node3_connection.end();
