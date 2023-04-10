@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const db = require('./database.js');
 
-// For simulating crashes w/o shuttomg down database instances.
+// For simulating crashes w/o shutting down database instances.
 const crash_config = {
 	node1: false,
 	node2: false,
@@ -40,12 +40,17 @@ app.get('/form', express.json(), (req, res, next) => {
 
 app.post('/add', express.json(), (req, res, next) => {
 	req.crash_config = crash_config;
-	db.oostAddMovie(req, res, next);;
+	db.postAddMovie(req, res, next);;
 });
 
 app.post('/delete', express.json(), (req, res, next) => {
-	// delete info
-	res.send('hotdog');
+	res.send('delete');
+	// db.postDeleteMovie(req, res, next);
+});
+
+app.post('/update', express.json(), (req, res, next) => {
+	res.send('update');
+	// db.postDeleteMovie(req, res, next);
 });
 
 // Error handling middleware
