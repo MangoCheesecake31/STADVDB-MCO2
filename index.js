@@ -43,14 +43,14 @@ app.post('/add', express.json(), (req, res, next) => {
 	db.postAddMovie(req, res, next);;
 });
 
-app.post('/delete', express.json(), (req, res, next) => {
-	res.send('delete');
-	// db.postDeleteMovie(req, res, next);
-});
-
 app.post('/update', express.json(), (req, res, next) => {
 	res.send('update');
 	// db.postDeleteMovie(req, res, next);
+});
+
+app.post('/delete', express.json(), (req, res, next) => {
+	req.crash_config = crash_config;
+	db.postDeleteMovie(req, res, next);
 });
 
 // Error handling middleware

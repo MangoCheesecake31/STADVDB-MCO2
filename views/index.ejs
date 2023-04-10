@@ -37,7 +37,11 @@
           <td><%= row.rank %></td>
           <td>
             <button class="button edit_button">Edit</button> 
-            <button class="button delete_button">Delete</button>
+            <form action="/delete" method="POST">
+              <input type="hidden" name="id" value="<%= row.id%>">
+              <input type="hidden" name="year" value="<%= row.year%>">
+              <button class="button delete_button">Delete</button>
+            </form>
           </td>
         </tr>
       <% }); %>
@@ -59,7 +63,7 @@
   <footer>
     <p>STADVDB MCO2 - Group 2</p>
     <p>Castro, Steven Jentyn S12</p>
-    <!-- <p>Sillona, John Eugene S11</p> -->
+    <p>Sillona, John Eugene S11</p>
     <!-- <p>Silverio, Gwyneth Alysson S12</p -->
   </footer>
 
