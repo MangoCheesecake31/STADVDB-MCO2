@@ -14,14 +14,15 @@
   </header>
 
   <main>
+    <div>
+      <button class="button add_movie_button" onclick="openForm()">Add Movie</button>
+    </div>
     <div>   
-      <form action="/search" method="POST">
-        <button class="button add_movie_button" onclick="openForm()">Add Movie</button>
+      <form action="/search" method="POST">    
         <input type="text" id="search_text" name="search_text" class="search_bar" placeholder="Type to search"> 
         <button type="submit" class="button">Search</button>
       </form>
     </div>
-
     <table>
       <tr>
         <th>ID</th>
@@ -36,7 +37,7 @@
           <td><%= row.year %></td>
           <td><%= row.rank %></td>
           <td>   
-            <button class="button edit_button" onclick="openEditForm(<%= row.id %>)">Edit</button> 
+            <button class="button edit_button" onclick="openEditForm('<%= row.id %>', '<%= row.name %>', '<%= row.year %>', '<%= row.rank %>')">Edit</button> 
             <form action="/delete" method="POST">
               <input type="hidden" name="id" value="<%= row.id%>">
               <input type="hidden" name="year" value="<%= row.year%>">
@@ -52,7 +53,7 @@
           <td><%= row.year %></td>
           <td><%= row.rank %></td>
           <td>
-            <button class="button edit_button" onclick="openEditForm(<%= row.id %>)">Edit</button> 
+            <button class="button edit_button" onclick="openEditForm('<%= row.id %>', '<%= row.name %>', '<%= row.year %>', '<%= row.rank %>')">Edit</button> 
             <form action="/delete" method="POST">
               <input type="hidden" name="id" value="<%= row.id%>">
               <input type="hidden" name="year" value="<%= row.year%>">
@@ -78,22 +79,35 @@
       var left = (screen.width / 2) - (width / 2);
       var top = (screen.height / 2) - (height / 2);
       window.open("/form", "Form", `width=${width}, height=${height}, left=${left}, top=${top}`);
-    }
+    };
 
+    function openEditForm(id, name, year, rank) {
+      var edit_id = parseInt(id);
+      var edit_name = name;
+      var edit_year = parseInt(year);
+      var edit_rank = parseFloat(rank);
 
-    function openEditForm(id) {
-      console.log(id)
-      var width = 500
-      var height = 600
+      var width = 500, height = 600
       var left = (screen.width / 2) - (width / 2);
       var top = (screen.height / 2) - (height / 2);
-      var popupwindow = window.open("/editform", "Form", `width=${width}, height=${height}, left=${left}, top=${top}`);
-      console.log(popupwindow)
-      popupwindow.onload = function() {
-        var id = popupwindow.document.getElementById(editid_text);
-        id.value = id;
-      }
-    }
+
+      var edit_form = window.open('editform', 'Edit', `width=${width}, height=${height}, left=${left}, top=${top}`);
+      edit_form.onload = () => {
+        var id_element = edit_form.document.getElementById('editid_text');
+        var name_element = edit_form.document.getElementById('editname_text');
+        var year_element = edit_form.document.getElementById('edityear_text');
+        var rank_element = edit_form.document.getElementById('editrank_text');
+        var orig_year_element = edit_form.document.getElementById('orig_year');
+
+        id_element.value = edit_id;
+        name_element.value = edit_name;
+        year_element.value = edit_year;
+        orig_year_element.value = edit_year;
+        if (rank != NaN) {
+          rank_element.value = edit_rank;
+        } 
+      };
+    };
   </script>
 </body>
 </html>

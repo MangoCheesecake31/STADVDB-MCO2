@@ -244,198 +244,252 @@ module.exports = {
         res.render('index', {table_data: [dataA, dataB]});
     },
     postAddMovie: async (req, res, next) => {
+        var node1_connection;
         var node2_connection;
         var node3_connection;
         var values = [parseInt(req.body.id_text), req.body.name_text, parseInt(req.body.year_text), parseFloat(req.body.rank_text)];
+        var replicateFlag = false;
 
-        if (1980 <= parseInt(req.body.year_text)) {
+        try {
+            console.log('> Inserting data to node 1');
+            if (req.crash_config.node1) { throw new Error('> Simulated Crash!'); }
+
+            // Connection
+            node1_connection = sql.createConnection(database_configs.node1);
+
+            // Query
+            let statement = 'INSERT INTO movies (`id`, `name`, `year`, `rank`) VALUES (?, ?, ?, ?)';
+            await runExecuteLogs(node1_connection, statement, values, [OPERATION.INSERT, STATUS.START, 1].concat(values), 'WRITE', 0);
+
+            node1_connection.end();
+            replicateFlag = true;
+            console.log('> Insert Movie Node 1 Success!');
+        } catch (err) {
+            console.log('> Node 1 is unavailable!');
+            if (node1_connection != null) { node1_connection.end(); }
+        }
+        
+        // Replicate
+        if (!replicateFlag) { return; }
+        if (values[2] >= 1980) {                            // Node 2
             try {
-                // Insert movie in replicate node 2.
-                console.log('> Inserting data to node 2');
-
-                if (req.crash_config.node2) {
-                    throw new Error('> Simulated Crash!');
-                }
-                
-                // Logging Values
-                let log_values = [OPERATION.INSERT].concat(values).concat([STATUS.START, 2]);
+                console.log('> Replicating data into Node 2!');
+                if (req.crash_config.node2) { throw new Error('> Simulated Crash!'); }
 
                 // Connection
                 node2_connection = sql.createConnection(database_configs.node2);
 
                 // Query
                 let statement = 'INSERT INTO movies (`id`, `name`, `year`, `rank`) VALUES (?, ?, ?, ?)';
-                await runExecuteLogs(node2_connection, statement, values, log_values, 'WRITE');
+                await runExecuteLogs(node2_connection, statement, values, [OPERATION.INSERT, STATUS.START, 2].concat(values), 'WRITE', 0);
+
                 node2_connection.end();
+                console.log('> Insert Movie Node 2 Success!');
             } catch (err) {
-                console.log('> Node 2 is unavailable! [ADD]');
-
-                if (node2_connection != null) {
-                    node2_connection.end();
-                }
-            };
-        } else {
+                console.log('> Node 2 is unavailable! [INSERT-REP]');
+                if (node2_connection != null) { node2_connection.end(); }
+            }   
+        } else {                                            // Node 3
             try {
-                // Insert movie in replicate node 3.
-                console.log('> Inserting data to node 3');
-
-                if (req.crash_config.node3) {
-                    throw new Error('> Simulated Crash!');
-                }
-                
-                // Logging Values
-                let log_values = [OPERATION.INSERT].concat(values).concat([STATUS.START, 3]);
+                console.log('> Replicating data into Node 3!');
+                if (req.crash_config.node3) { throw new Error('> Simulated Crash!'); }
 
                 // Connection
                 node3_connection = sql.createConnection(database_configs.node3);
 
                 // Query
                 let statement = 'INSERT INTO movies (`id`, `name`, `year`, `rank`) VALUES (?, ?, ?, ?)';
-                await runExecuteLogs(node3_connection, statement, values, log_values, 'WRITE');
-                node3_connection.end();
-            } catch (err) {
-                console.log('> Node 3 is unavailable! [ADD]');
-                console.log(err);
+                await runExecuteLogs(node3_connection, statement, values, [OPERATION.INSERT, STATUS.START, 3].concat(values), 'WRITE', 0);
 
-                if (node3_connection != null) {
-                    node3_connection.end();
-                }
-            };
+                node3_connection.end();
+                console.log('> Insert Movie Node 3 Success!');
+            } catch (err) {
+                console.log('> Node 3 is unavailable! [INSERT-REP]');
+                if (node3_connection != null) { node3_connection.end(); }
+            }
         }
     },
     postUpdateMovie: async (req, res, next) => {
+        var node1_connection;
         var node2_connection;
         var node3_connection;
-        var values = [parseInt(req.body.id), req.body.editname_text, parseInt(req.body.edityear_text), parseFloat(req.body.editrank_text)]
-        var id_value = parseInt(req.body.id);
+        var values = [parseInt(req.body.editid_text), req.body.editname_text, parseInt(req.body.edityear_text), parseFloat(req.body.editrank_text)];
+        var originalYear = parseInt(req.body.orig_year);
+        var replicateFlag = false;
 
-        if (parseInt(req.body.year)>=1980) {
+        if (values[3] == NaN) { values[3] == null };
+
+        console.log(values);
+        console.log(values[1], values[2], values[3], values[0]);
+
+
+        try {
+            console.log('> Updating data from node 1');
+            if (req.crash_config.node1) { throw new Error('> Simulated Crash!'); }
+
+            // Connection
+            node1_connection = sql.createConnection(database_configs.node1);
+
+            // Query
+            let statement = 'UPDATE movies SET `name` = ?, `year` = ?, `rank` = ? WHERE id = ?';
+            await runExecuteLogs(node1_connection, statement, [values[1], values[2], values[3], values[0]], [OPERATION.UPDATE, STATUS.START, 1].concat(values), 'WRITE', 3);
+
+            node1_connection.end();
+            replicateFlag = true;
+            console.log('> Update Movie Node 1 Success!');
+        } catch (err) {
+            console.log('> Node 1 is unavailable!');
+            if (node1_connection != null) { node1_connection.end(); }
+        }
+
+        // Replicate
+        if (!replicateFlag) { return; }
+        if (originalYear >= 1980) {                            // Node 2
             try {
-                console.log('> Updating data in node 2');
+                console.log('> Replicating data into Node 2!');
+                if (req.crash_config.node2) { throw new Error('> Simulated Crash!'); }
 
-                if (req.crash_config.node2) {
-                    throw new Error('> Simulated Crash!');
-                }
-                
-                let log_values = [OPERATION.UPDATE].concat(values).concat([STATUS.START, 2]);
-
+                // Connection
                 node2_connection = sql.createConnection(database_configs.node2);
 
-                let statement = 'UPDATE movies SET name = ?, year = ?, rank = ? WHERE id = ?';
-                await runExecuteLogs(node2_connection, statement, values, log_values, 'WRITE');
-                node2_connection.end();
-            } catch (err) {
-                console.log('> Node 2 is unavailable!');
+                // Query
+                if (!(values[2] >= 1980)) {
+                    console.log('> Swapping');
+                    try {
+                        // Connection
+                        node3_connection = sql.createConnection(database_configs.node3);
 
-                if (node2_connection != null) {
+                        // Query
+                        let insert_statement = 'INSERT INTO movies (`id`, `name`, `year`, `rank`) VALUES (?, ?, ?, ?)';
+                        await runExecuteLogs(node3_connection, insert_statement, values, [OPERATION.INSERT, STATUS.START, 3].concat(values), 'WRITE', 0);
+                        let delete_statement = 'DELETE FROM movies WHERE id = ?';
+                        await runExecuteLogs(node2_connection, delete_statement, [values[0]], [OPERATION.DELETE, STATUS.START, 2].concat(values), 'WRITE', 0);
+
+                        node2_connection.end();
+                        node3_connection.end();
+                        console.log('> Update Movie SWAP Node 2 & 3 Success!');
+                    } catch (err) {
+                        console.log('> Node 3 is unavailable! [UPDATE-REP]');
+                        if (node3_connection != null) { node3_connection.end(); }
+                    }
+                } else {
+                    let statement = 'UPDATE movies SET `name` = ?, `year` = ?, `rank` = ? WHERE id = ?';
+                    await runExecuteLogs(node2_connection, statement, [values[1], values[2], values[3], values[0]], [OPERATION.UPDATE, STATUS.START, 2].concat(values), 'WRITE', 3);
+            
                     node2_connection.end();
-                }
-            };
-        } else {
+                    console.log('> Update Movie Node 2 Success!');
+                }    
+            } catch (err) {
+                console.log('> Node 2 is unavailable! [UPDATE-REP]');
+                if (node2_connection != null) { node2_connection.end(); }
+            }   
+        } else {                                            // Node 3
             try {
-                
-                console.log('> Updating data in node 3');
-                
-                if (req.crash_config.node3) {
-                    throw new Error('> Simulated Crash!');
-                }
-                
-                let log_values = [OPERATION.UPDATE].concat(values).concat([STATUS.START, 3]);
-                
+                console.log('> Replicating data into Node 3!');
+                if (req.crash_config.node3) { throw new Error('> Simulated Crash!'); }
+
+                // Connection
                 node3_connection = sql.createConnection(database_configs.node3);
 
-                let statement = 'UPDATE movies SET name = ?, year = ?, rank = ? WHERE id = ?';
-                await runExecuteLogs(node3_connection, statement, values, log_values, 'WRITE');
-                node3_connection.end();
-            } catch (err) {
-                console.log('> Node 3 is unavailable!');
-                console.log(err);
+                // Query
+                if (!(values[2] < 1980)) {
+                    console.log('> Swapping');
+                    try {
+                        // Connection
+                        node2_connection = sql.createConnection(database_configs.node2);
 
-                if (node3_connection != null) {
+                        // Query
+                        let insert_statement = 'INSERT INTO movies (`id`, `name`, `year`, `rank`) VALUES (?, ?, ?, ?)';
+                        await runExecuteLogs(node2_connection, insert_statement, values, [OPERATION.INSERT, STATUS.START, 2].concat(values), 'WRITE', 0);
+                        let delete_statement = 'DELETE FROM movies WHERE id = ?';
+                        await runExecuteLogs(node3_connection, delete_statement, [values[0]], [OPERATION.DELETE, STATUS.START, 3].concat(values), 'WRITE', 0);
+
+                        node2_connection.end();
+                        node3_connection.end();
+                        console.log('> Update Movie SWAP Node 2 & 3 Success!');
+                    } catch (err) {
+                        console.log('> Node 2 is unavailable! [UPDATE-REP]');
+                        if (node2_connection != null) { node2_connection.end(); }
+                    }
+                } else {
+                    let statement = 'UPDATE movies SET `name` = ?, `year` = ?, `rank` = ? WHERE id = ?';
+                    await runExecuteLogs(node3_connection, statement, [values[1], values[2], values[3], values[0]], [OPERATION.UPDATE, STATUS.START, 2].concat(values), 'WRITE', 3);
+            
                     node3_connection.end();
-                }
-            };
-        }
+                    console.log('> Update Movie Node 3 Success!');
+                }    
+            } catch (err) {
+                console.log('> Node 3 is unavailable! [UPDATE-REP]');
+                if (node3_connection != null) { node3_connection.end(); }
+            } 
+        } 
     },
     postDeleteMovie: async (req, res, next) => {
         var node1_connection;
         var node2_connection;
         var node3_connection;
-        var dataA, dataB;
-        var value = [parseInt(req.body.id), req.body.editname_text, parseInt(req.body.edityear_text), parseFloat(req.body.editrank_text)];
-        var id = [parseInt(req.body.id)]
-        var movie_release_year = [parseInt(req.body.year)]
-        
+        var values = [parseInt(req.body.id), null, parseInt(req.body.year), null];
+        var replicateFlag = false;  
+
         try {
-            console.log('> Fetching data from node 2');
+            console.log('> Deleting data from node 1');
+            if (req.crash_config.node1) { throw new Error('> Simulated Crash!'); }
 
-            if (req.crash_config.node2) {
-                throw new Error('> Simulated Crash!');
-            }
+            // Connection
+            node1_connection = sql.createConnection(database_configs.node1);
 
-            // Logging Values
-            let log_values = [OPERATION.DELETE, value].concat([STATUS.START, 1]);
+            // Query
+            let statement = 'DELETE FROM movies WHERE id = ?';
+            await runExecuteLogs(node1_connection, statement, [values[0]], [OPERATION.DELETE, STATUS.START, 1].concat(values), 'WRITE', 0);
 
-            node1_connection = sql.createConnection(database_configs.node1)
-
-            let statement = 'DELETE FROM movies where id = ?';
-            await runExecuteLogs(node1_connection, statement, id, log_values, 'WRITE');
-            node1_connection.end() 
+            node1_connection.end();
+            replicateFlag = true;
+            console.log('> Delete Movie Node 1 Success!');
         } catch (err) {
-            console.log('> Node 1 is unavailable! [DELETE]');
+            console.log('> Node 1 is unavailable!');
+            if (node1_connection != null) { node1_connection.end(); }
+        }
 
-            if(node1_connection != null) {
-                node1_connection.end();
-            }
-        };
-        if (movie_release_year >= 1980) {
+        // Replicate
+        if (!replicateFlag) { return; }
+        if (values[2] >= 1980) {                            // Node 2
             try {
-                console.log('> Deleting data from node 3');
+                console.log('> Replicating data into Node 2!');
+                if (req.crash_config.node2) { throw new Error('> Simulated Crash!'); }
 
-                if (req.crash_config.node3) {
-                    throw new Error('> Simulated Crash!');
-                }
-
-                let log_values = [OPERATION.DELETE, value].concat([STATUS.START, 3]);
-
-                node3_connection = sql.createConnection(database_configs.node3);
-
-                let statement = 'DELETE FROM movies WHERE id = ?';
-                await runExecuteLogs(node3_connection, statement, id, log_values, 'WRITE');
-                node3_connection.end();
-            } catch (err) {
-                console.log('> Node 3 is unavailable! [DELETE]');
-                console.log(err);
-
-                if(node3_connection != null){
-                    node3_connection.end();
-                }
-            };
-        } else {
-            try {
-                console.log('> Deleting data from node 2');
-
-                if (req.crash_config.node2) {
-                    throw new Error('> Simulated Crash!');
-                }
-
-                let log_values = [OPERATION.DELETE, value].concat([STATUS.START, 2]);
-
+                // Connection
                 node2_connection = sql.createConnection(database_configs.node2);
 
+                // Query
                 let statement = 'DELETE FROM movies WHERE id = ?';
-                await runExecuteLogs(node2_connection, statement, id, log_values, 'WRITE');
-                node2_connection.end();
-            } catch (err) {
-                console.log('> Node 2 is unavailable! [DELETE]');
-                console.log(err);
+                await runExecuteLogs(node2_connection, statement, [values[0]], [OPERATION.DELETE, STATUS.START, 2].concat(values), 'WRITE', 0);
 
-                if(node2_connection != null){
-                    node2_connection.end();
-                }
-            };
-        }
-    },
+                node2_connection.end();
+                console.log('> Delete Movie Node 2 Success!');
+            } catch (err) {
+                console.log('> Node 2 is unavailable! [INSERT-REP]');
+                if (node2_connection != null) { node2_connection.end(); }
+            }   
+        } else {                                            // Node 3
+            try {
+                console.log('> Replicating data into Node 3!');
+                if (req.crash_config.node3) { throw new Error('> Simulated Crash!'); }
+
+                // Connection
+                node3_connection = sql.createConnection(database_configs.node3);
+
+                // Query
+                let statement = 'DELETE FROM movies WHERE id = ?';
+                await runExecuteLogs(node3_connection, statement, [values[0]], [OPERATION.DELETE, STATUS.START, 3].concat(values), 'WRITE', 0);
+
+                node3_connection.end();
+                console.log('> Delete Movie Node 3 Success!');
+            } catch (err) {
+                console.log('> Node 3 is unavailable! [INSERT-REP]');
+                if (node3_connection != null) { node3_connection.end(); }
+            }
+        }     
+    }
 };
 
 /** 
@@ -460,48 +514,49 @@ async function runQuery(connection, statement, type) {
 /** 
  *  Repetitive operations for prepared MySQL queries w/ Logging.
 */
-async function runExecuteLogs(connection, statement, values, log_values, type) {
+async function runExecuteLogs(connection, statement, values, log_values, type, id_index) {
+    var logs_connection;
+    
     try {
-        node1_connection = sql.createConnection(database_configs.node1);
+        // Connections (Log)
         logs_connection = sql.createConnection(database_configs.dblog);
-
-        await node1_connection.promise().query('SET AUTOCOMMIT = 0');
-        await node1_connection.promise().query('START TRANSACTION');
-        await node1_connection.promise().query(`LOCK TABLES movies ${type}`);        
         
-        await connection.promise().query('SET AUTOCOMMIT = 0');
-        await connection.promise().query('START TRANSACTION');
-        await connection.promise().query(`LOCK TABLES movies ${type}`);
-
         // Insert Logs
-        let log_statement = 'INSERT INTO logs (`operation`, `id`, `name`, `year`, `rank`, `status`, `node`) VALUES (?, ?, ?, ?, ?, ?, ?)';
+        let log_statement = 'INSERT INTO logs (`operation`, `status`, `node`, `id`, `name`, `year`, `rank`) VALUES (?, ?, ?, ?, ?, ?, ?)';
         await logs_connection.promise().execute(log_statement, log_values);
 
-        // Update Logs (Write)
-        log_statement = 'UPDATE logs SET status = ? WHERE id = ? AND node = ?';
-        let new_log_values = [STATUS.WRITE, log_values[1], log_values[6]];
-        
-        await logs_connection.promise().execute(log_statement, new_log_values);
-        await node1_connection.promise().execute(statement, values);
+        // Set Transaction Timeout (10s)
+        await connection.promise().query('SET innodb_lock_wait_timeout = 10');
+
+        // Transaction w/ Logs
+        await connection.promise().query('SET AUTOCOMMIT = 0');                     // Lock & Start Transaction
+        await connection.promise().query('START TRANSACTION');
+        await connection.promise().query(`LOCK TABLES movies ${type}`);
+        await updateLogs(logs_connection, [STATUS.WRITE, values[id_index]]);
+        await connection.promise().execute(statement, values);                      // SQL Operations
+        await updateLogs(logs_connection, [STATUS.COMMITTING, values[id_index]]);
+        await connection.promise().query('COMMIT');                                 // Commit
+        await updateLogs(logs_connection, [STATUS.COMMITTED, values[id_index]]);
+        await connection.promise().query('UNLOCK TABLES');                          // Unlock
+        await updateLogs(logs_connection, [STATUS.SUCCESS, values[id_index]]);
+    } catch (err) {
+        console.log('> An error occured in a transaction!');
+        console.log(err);
+
+        // Error Logs
+        await updateLogs(logs_connection, [STATUS.TERMINATE, values[id_index]]);  
+        throw (err);         
+    };
+};
+
+/** 
+ *  Repetitive operations for prepared logging MySQL queries.
+*/
+async function updateLogs(connection, values) {
+    console.log(values);
+    let statement = `UPDATE logs SET status = ? WHERE id = ? AND status != ${STATUS.TERMINATE}`;
+    try {
         await connection.promise().execute(statement, values);
-
-        // Update Logs (Committing)
-        log_statement = 'UPDATE logs SET status = ? WHERE id = ? AND node = ?';
-        new_log_values = [STATUS.COMMITTING, log_values[1], log_values[6]];
-
-        await logs_connection.promise().execute(log_statement, new_log_values);
-        await node1_connection.promise().query('COMMIT');
-        await connection.promise().query('COMMIT');
-
-        // Update Logs (Committed)
-        log_statement = 'UPDATE logs SET status = ? WHERE id = ? AND node = ?';
-        new_log_values = [STATUS.COMMITTED, log_values[1], log_values[6]];
-
-        await logs_connection.promise().execute(log_statement, new_log_values);
-        await node1_connection.promise().query('UNLOCK TABLES');
-        await connection.promise().query('UNLOCK TABLES');
-
-        console.log('INSERT SUCCESS');
     } catch (err) {
         throw err;
     }

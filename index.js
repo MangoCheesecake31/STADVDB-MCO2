@@ -47,9 +47,9 @@ app.post('/add', express.json(), (req, res, next) => {
 	db.postAddMovie(req, res, next);;
 });
 
-app.post('/update', express.json(), (req, res, next) => {
+app.post('/delete', express.json(), (req, res, next) => {
 	req.crash_config = crash_config;
-	db.postUpdateMovie(req, res, next);
+	db.postDeleteMovie(req, res, next);
 });
 
 app.post('/update', express.json(), (req, res, next) => {
