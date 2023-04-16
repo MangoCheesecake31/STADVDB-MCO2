@@ -35,8 +35,8 @@
           <td><%= row.name %></td>
           <td><%= row.year %></td>
           <td><%= row.rank %></td>
-          <td>
-            <button class="button edit_button">Edit</button> 
+          <td>   
+            <button class="button edit_button" onclick="openEditForm(<%= row.id %>)">Edit</button> 
             <button class="button delete_button">Delete</button>
           </td>
         </tr>
@@ -48,7 +48,7 @@
           <td><%= row.year %></td>
           <td><%= row.rank %></td>
           <td>
-            <button class="button edit_button">Edit</button> 
+            <button class="button edit_button" onclick="openEditForm(<%= row.id %>)">Edit</button> 
             <button class="button delete_button">Delete</button>
           </td>
         </tr>
@@ -60,7 +60,7 @@
     <p>STADVDB MCO2 - Group 2</p>
     <p>Castro, Steven Jentyn S12</p>
     <!-- <p>Sillona, John Eugene S11</p> -->
-    <!-- <p>Silverio, Gwyneth Alysson S12</p -->
+    <p>Silverio, Gwyneth Alysson S12</p>
   </footer>
 
   <script>
@@ -70,6 +70,20 @@
       var left = (screen.width / 2) - (width / 2);
       var top = (screen.height / 2) - (height / 2);
       window.open("/form", "Form", `width=${width}, height=${height}, left=${left}, top=${top}`);
+    }
+
+    function openEditForm(id) {
+      console.log(id)
+      var width = 500
+      var height = 600
+      var left = (screen.width / 2) - (width / 2);
+      var top = (screen.height / 2) - (height / 2);
+      var popupwindow = window.open("/editform", "Form", `width=${width}, height=${height}, left=${left}, top=${top}`);
+      console.log(popupwindow)
+      popupwindow.onload = function() {
+        var id = popupwindow.document.getElementById(editid_text);
+        id.value = id;
+      }
     }
   </script>
 </body>
