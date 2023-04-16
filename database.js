@@ -304,14 +304,10 @@ module.exports = {
         }
     },
     postUpdateMovie: async (req, res, next) => {
-
         var node2_connection;
         var node3_connection;
         var values = [parseInt(req.body.id), req.body.editname_text, parseInt(req.body.edityear_text), parseFloat(req.body.editrank_text)]
-        var values2 = [req.body.editname_text, parseInt(req.body.edityear_text), parseFloat(req.body.editrank_text), parseInt(req.body.id)]
-        
-        console.log(values)
-
+        var id_value = parseInt(req.body.id);
 
         if (parseInt(req.body.year)>=1980) {
             try {
@@ -326,7 +322,7 @@ module.exports = {
                 node2_connection = sql.createConnection(database_configs.node2);
 
                 let statement = 'UPDATE movies SET name = ?, year = ?, rank = ? WHERE id = ?';
-                await runExecuteLogs(node2_connection, statement, values2, log_values, 'WRITE');
+                await runExecuteLogs(node2_connection, statement, values, log_values, 'WRITE');
                 node2_connection.end();
             } catch (err) {
                 console.log('> Node 2 is unavailable!');
@@ -339,7 +335,7 @@ module.exports = {
             try {
                 
                 console.log('> Updating data in node 3');
-
+                
                 if (req.crash_config.node3) {
                     throw new Error('> Simulated Crash!');
                 }
@@ -362,7 +358,83 @@ module.exports = {
         }
     },
     postDeleteMovie: async (req, res, next) => {
+        var node1_connection;
+        var node2_connection;
+        var node3_connection;
+        var dataA, dataB;
+        var value = [parseInt(req.body.id), req.body.editname_text, parseInt(req.body.edityear_text), parseFloat(req.body.editrank_text)];
+        var id = [parseInt(req.body.id)]
+        var movie_release_year = [parseInt(req.body.year)]
         
+        try {
+            console.log('> Fetching data from node 2');
+
+            if (req.crash_config.node2) {
+                throw new Error('> Simulated Crash!');
+            }
+
+            // Logging Values
+            let log_values = [OPERATION.DELETE, value].concat([STATUS.START, 1]);
+
+            node1_connection = sql.createConnection(database_configs.node1)
+
+            let statement = 'DELETE FROM movies where id = ?';
+            await runExecuteLogs(node1_connection, statement, id, log_values, 'WRITE');
+            node1_connection.end() 
+        } catch (err) {
+            console.log('> Node 1 is unavailable! [DELETE]');
+
+            if(node1_connection != null) {
+                node1_connection.end();
+            }
+        };
+        if (movie_release_year >= 1980) {
+            try {
+                console.log('> Deleting data from node 3');
+
+                if (req.crash_config.node3) {
+                    throw new Error('> Simulated Crash!');
+                }
+
+                let log_values = [OPERATION.DELETE, value].concat([STATUS.START, 3]);
+
+                node3_connection = sql.createConnection(database_configs.node3);
+
+                let statement = 'DELETE FROM movies WHERE id = ?';
+                await runExecuteLogs(node3_connection, statement, id, log_values, 'WRITE');
+                node3_connection.end();
+            } catch (err) {
+                console.log('> Node 3 is unavailable! [DELETE]');
+                console.log(err);
+
+                if(node3_connection != null){
+                    node3_connection.end();
+                }
+            };
+        } else {
+            try {
+                console.log('> Deleting data from node 2');
+
+                if (req.crash_config.node2) {
+                    throw new Error('> Simulated Crash!');
+                }
+
+                let log_values = [OPERATION.DELETE, value].concat([STATUS.START, 2]);
+
+                node2_connection = sql.createConnection(database_configs.node2);
+
+                let statement = 'DELETE FROM movies WHERE id = ?';
+                await runExecuteLogs(node2_connection, statement, id, log_values, 'WRITE');
+                node2_connection.end();
+            } catch (err) {
+                console.log('> Node 2 is unavailable! [DELETE]');
+                console.log(err);
+
+                if(node2_connection != null){
+                    node2_connection.end();
+                }
+            };
+        }
     },
 };
 
