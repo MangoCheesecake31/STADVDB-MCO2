@@ -36,7 +36,7 @@
           <td><%= row.year %></td>
           <td><%= row.rank %></td>
           <td>
-            <button class="button edit_button">Edit</button> 
+            <button class="button edit_button" onclick="openEditForm()">Edit</button> 
             <form action="/delete" method="POST">
               <input type="hidden" name="id" value="<%= row.id%>">
               <input type="hidden" name="year" value="<%= row.year%>">
@@ -52,7 +52,7 @@
           <td><%= row.year %></td>
           <td><%= row.rank %></td>
           <td>
-            <button class="button edit_button">Edit</button> 
+            <button class="button edit_button" onclick="openEditForm()">Edit</button> 
             <button class="button delete_button">Delete</button>
           </td>
         </tr>
@@ -64,7 +64,7 @@
     <p>STADVDB MCO2 - Group 2</p>
     <p>Castro, Steven Jentyn S12</p>
     <p>Sillona, John Eugene S11</p>
-    <!-- <p>Silverio, Gwyneth Alysson S12</p -->
+    <p>Silverio, Gwyneth Alysson S12</p>
   </footer>
 
   <script>
@@ -74,6 +74,13 @@
       var left = (screen.width / 2) - (width / 2);
       var top = (screen.height / 2) - (height / 2);
       window.open("/form", "Form", `width=${width}, height=${height}, left=${left}, top=${top}`);
+    }
+    function openEditForm() {
+      var width = 500
+      var height = 600
+      var left = (screen.width / 2) - (width / 2);
+      var top = (screen.height / 2) - (height / 2);
+      window.open("/editform", "Edit Form", `width=${width}, height=${height}, left=${left}, top=${top}`);
     }
   </script>
 </body>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/simpledotcss/simple.min.css">
+    <link rel="stylesheet" href="./public/custom.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/ico" href="./public/favicon.ico">
+    <title>IMDB</title>
+</head>
+<body>
+  <header>
+    <h1>Form</h1>
+  </header>
+
+  <main>
+    <div>
+      <form action="/update" method="POST">
+        <label>Rank</label>
+        <input type="text" id="editrank_text" name="editrank_text">
+        <button type="submit" class="button edit_movie_button" onclick="setTimeout(closeForm, 3000)">Edit Movie</button>
+      </form>
+    </div>
+    <script>
+      function closeForm() {
+        window.close();
+      }
+    </script>
+  </main>
+
+</body>
+</html>
