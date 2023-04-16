@@ -304,7 +304,58 @@ module.exports = {
         }
     },
     postUpdateMovie: async (req, res, next) => {
+        var node2_connection;
+        var node3_connection;
+        var values = [parseInt(req.body.id), req.body.editname_text, parseInt(req.body.edityear_text), parseFloat(req.body.editrank_text)]
+        var log_value = parseInt(req.body.id);
 
+        if (parseInt(req.body.year)>=1980) {
+            try {
+                console.log('> Updating data in node 2');
+
+                if (req.crash_config.node2) {
+                    throw new Error('> Simulated Crash!');
+                }
+                
+                let log_values = [OPERATION.UPDATE].concat(values).concat([STATUS.START, 2]);
+
+                node2_connection = sql.createConnection(database_configs.node2);
+
+                let statement = 'UPDATE movies SET name = ?, year = ?, rank = ? WHERE id = ?';
+                await runExecuteLogs(node2_connection, statement, values, log_values, 'WRITE');
+                node2_connection.end();
+            } catch (err) {
+                console.log('> Node 2 is unavailable!');
+
+                if (node2_connection != null) {
+                    node2_connection.end();
+                }
+            };
+        } else {
+            try {
+                
+                console.log('> Updating data in node 3');
+
+                if (req.crash_config.node3) {
+                    throw new Error('> Simulated Crash!');
+                }
+                
+                let log_values = [OPERATION.UPDATE].concat(values).concat([STATUS.START, 3]);
+                
+                node3_connection = sql.createConnection(database_configs.node3);
+
+                let statement = 'UPDATE movies SET name = ?, year = ?, rank = ? WHERE id = ?';
+                await runExecuteLogs(node3_connection, statement, values, log_values, 'WRITE');
+                node3_connection.end();
+            } catch (err) {
+                console.log('> Node 3 is unavailable!');
+                console.log(err);
+
+                if (node3_connection != null) {
+                    node3_connection.end();
+                }
+            };
+        }
     },
     postDeleteMovie: async (req, res, next) => {
         var node1_connection;

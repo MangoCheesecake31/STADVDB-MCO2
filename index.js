@@ -38,14 +38,18 @@ app.get('/form', express.json(), (req, res, next) => {
 	res.render('form', {});
 });
 
+app.get('/editform', express.json(), (req, res, next) => {
+	res.render('editform', {});
+});
+
 app.post('/add', express.json(), (req, res, next) => {
 	req.crash_config = crash_config;
 	db.postAddMovie(req, res, next);;
 });
 
 app.post('/update', express.json(), (req, res, next) => {
-	res.send('update');
-	// db.postDeleteMovie(req, res, next);
+	req.crash_config = crash_config;
+	db.postUpdateMovie(req, res, next);
 });
 
 app.post('/delete', express.json(), (req, res, next) => {
