@@ -362,7 +362,8 @@ module.exports = {
         var node2_connection;
         var node3_connection;
         var dataA, dataB;
-        var value = [req.body.id];
+        var value = [parseInt(req.body.id), req.body.editname_text, parseInt(req.body.edityear_text), parseFloat(req.body.editrank_text)];
+        var id = [parseInt(req.body.id)]
         var movie_release_year = [parseInt(req.body.year)]
         
         try {
@@ -378,7 +379,7 @@ module.exports = {
             node1_connection = sql.createConnection(database_configs.node1)
 
             let statement = 'DELETE FROM movies where id = ?';
-            await runExecuteLogs(node1_connection, statement, value, log_values, 'WRITE');
+            await runExecuteLogs(node1_connection, statement, id, log_values, 'WRITE');
             node1_connection.end() 
         } catch (err) {
             console.log('> Node 1 is unavailable! [DELETE]');
@@ -400,7 +401,7 @@ module.exports = {
                 node3_connection = sql.createConnection(database_configs.node3);
 
                 let statement = 'DELETE FROM movies WHERE id = ?';
-                await runExecuteLogs(node3_connection, statement, value, log_values, 'WRITE');
+                await runExecuteLogs(node3_connection, statement, id, log_values, 'WRITE');
                 node3_connection.end();
             } catch (err) {
                 console.log('> Node 3 is unavailable! [DELETE]');
@@ -423,7 +424,7 @@ module.exports = {
                 node2_connection = sql.createConnection(database_configs.node2);
 
                 let statement = 'DELETE FROM movies WHERE id = ?';
-                await runExecuteLogs(node2_connection, statement, value, log_values, 'WRITE');
+                await runExecuteLogs(node2_connection, statement, id, log_values, 'WRITE');
                 node2_connection.end();
             } catch (err) {
                 console.log('> Node 2 is unavailable! [DELETE]');
