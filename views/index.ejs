@@ -35,8 +35,8 @@
           <td><%= row.name %></td>
           <td><%= row.year %></td>
           <td><%= row.rank %></td>
-          <td>
-            <button class="button edit_button" onclick="openEditForm()">Edit</button> 
+          <td>   
+            <button class="button edit_button" onclick="openEditForm(<%= row.id %>)">Edit</button> 
             <form action="/delete" method="POST">
               <input type="hidden" name="id" value="<%= row.id%>">
               <input type="hidden" name="year" value="<%= row.year%>">
@@ -52,8 +52,12 @@
           <td><%= row.year %></td>
           <td><%= row.rank %></td>
           <td>
-            <button class="button edit_button" onclick="openEditForm()">Edit</button> 
-            <button class="button delete_button">Delete</button>
+            <button class="button edit_button" onclick="openEditForm(<%= row.id %>)">Edit</button> 
+            <form action="/delete" method="POST">
+              <input type="hidden" name="id" value="<%= row.id%>">
+              <input type="hidden" name="year" value="<%= row.year%>">
+              <button class="button delete_button">Delete</button>
+            </form>
           </td>
         </tr>
       <% }); %>
@@ -75,12 +79,20 @@
       var top = (screen.height / 2) - (height / 2);
       window.open("/form", "Form", `width=${width}, height=${height}, left=${left}, top=${top}`);
     }
-    function openEditForm() {
+
+
+    function openEditForm(id) {
+      console.log(id)
       var width = 500
       var height = 600
       var left = (screen.width / 2) - (width / 2);
       var top = (screen.height / 2) - (height / 2);
-      window.open("/editform", "Edit Form", `width=${width}, height=${height}, left=${left}, top=${top}`);
+      var popupwindow = window.open("/editform", "Form", `width=${width}, height=${height}, left=${left}, top=${top}`);
+      console.log(popupwindow)
+      popupwindow.onload = function() {
+        var id = popupwindow.document.getElementById(editid_text);
+        id.value = id;
+      }
     }
   </script>
 </body>

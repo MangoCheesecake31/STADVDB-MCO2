@@ -335,7 +335,7 @@ module.exports = {
             try {
                 
                 console.log('> Updating data in node 3');
-
+                
                 if (req.crash_config.node3) {
                     throw new Error('> Simulated Crash!');
                 }

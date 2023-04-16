@@ -52,9 +52,9 @@ app.post('/update', express.json(), (req, res, next) => {
 	db.postUpdateMovie(req, res, next);
 });
 
-app.post('/delete', express.json(), (req, res, next) => {
+app.post('/update', express.json(), (req, res, next) => {
 	req.crash_config = crash_config;
-	db.postDeleteMovie(req, res, next);
+	db.postUpdateMovie(req, res, next);
 });
 
 // Error handling middleware
