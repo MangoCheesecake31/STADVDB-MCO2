@@ -307,7 +307,7 @@ module.exports = {
         var node2_connection;
         var node3_connection;
         var values = [parseInt(req.body.id), req.body.editname_text, parseInt(req.body.edityear_text), parseFloat(req.body.editrank_text)]
-        var log_value = parseInt(req.body.id);
+        var id_value = parseInt(req.body.id);
 
         if (parseInt(req.body.year)>=1980) {
             try {
