@@ -9,7 +9,7 @@ const db = require('./database.js');
 // For simulating crashes w/o shutting down database instances.
 const crash_config = {
 	node1: false,
-	node2: false,
+	node2: true,
 	node3: false,
 };
 
